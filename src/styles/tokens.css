@@ -1,0 +1,217 @@
+/*
+ * Sindri Design System — Colors & Type
+ * --------------------------------------------------------------
+ * 2D game engine + editor with a local-first, AI-as-peer ethos.
+ * The visual language is "terminal-leaning, dark + pixel":
+ *   - warm forge palette over a dark navy paper
+ *   - amber reserved EXCLUSIVELY for AI-related affordances
+ *   - zero corner radius
+ *   - single-pixel hairlines; no drop shadows on chrome
+ *   - pixel-feel display type (Pixelify Sans) + JetBrains Mono for code
+ */
+
+@import url("https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=VT323&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+:root {
+  /* ─── color foundations ─────────────────────────────────── */
+  --paper:   #0d1117;
+  --paper-2: #161b22;
+  --paper-3: #1e2530;
+  --paper-4: #242b36;
+
+  --ink:     #e6e1d4;
+  --ink-2:   #c4beae;
+  --ink-3:   #8a8580;
+  --ink-4:   #5a554e;
+
+  --rule:    #1f242c;
+  --rule-2:  #2a3038;
+
+  /* ─── amber: AI affordances ONLY ───────────────────────── */
+  --amber:        #f0c050;
+  --amber-dim:    #b08c30;
+  --amber-glow:   rgba(240, 192, 80, 0.12);
+  --amber-glow-2: rgba(240, 192, 80, 0.22);
+
+  /* ─── entity / camera accent ─────────────────────────────── */
+  --cyan:         #6dbcdb;
+  --cyan-glow:    rgba(109, 188, 219, 0.08);
+
+  /* ─── state colors ────────────────────────────────────────── */
+  --moss:    #9bb070;
+  --red:     #e05555;
+  --orange:  #d4541e;
+  --stone:   #a8a298;
+
+  /* ─── compat aliases ──────────────────────────────────────── */
+  --bg-0:           var(--paper);
+  --bg-1:           var(--paper);
+  --bg-2:           var(--paper-2);
+  --bg-3:           var(--paper-3);
+  --bg-4:           var(--paper-4);
+  --border:         var(--rule);
+  --border-bright:  var(--rule-2);
+  --text-dim:       var(--ink-4);
+  --text-muted:     var(--ink-3);
+  --text-base:      var(--ink-2);
+  --text-bright:    var(--ink);
+  --text-white:     var(--ink);
+  --accent:         var(--amber);
+  --accent-dim:     var(--amber-dim);
+  --accent-glow:    var(--amber-glow);
+  --ai:             var(--amber);
+  --ai-dim:         var(--amber-dim);
+  --ai-glow:        rgba(240, 192, 80, 0.10);
+  --green:          var(--moss);
+
+  /* ─── typography ─────────────────────────────────────────── */
+  --font-display: "Pixelify Sans", "VT323", monospace;
+  --font-sans:    "Pixelify Sans", "VT323", monospace;
+  --font-mono:    "JetBrains Mono", "VT323", monospace;
+
+  --t-10:   10px;
+  --t-10-5: 10.5px;
+  --t-11:   11px;
+  --t-11-5: 11.5px;
+  --t-12:   12px;
+  --t-12-5: 12.5px;
+  --t-13:   13px;
+  --t-14:   14px;
+  --t-16:   16px;
+  --t-18:   18px;
+  --t-22:   22px;
+  --t-26:   26px;
+  --t-36:   36px;
+
+  --track-wide:  0.14em;
+  --track-mid:   0.06em;
+  --track-tight: -0.01em;
+
+  /* ─── spacing ─────────────────────────────────────────────── */
+  --s-2:  2px;   --s-4:  4px;   --s-6:  6px;   --s-8:  8px;
+  --s-10: 10px;  --s-12: 12px;  --s-14: 14px;  --s-16: 16px;
+  --s-18: 18px;  --s-20: 20px;  --s-22: 22px;  --s-28: 28px;
+  --s-32: 32px;
+
+  /* ─── shape: zero radius everywhere ─────────────────────── */
+  --radius: 0;
+
+  /* ─── layout ──────────────────────────────────────────────── */
+  --w-pane-left:  260px;
+  --w-pane-right: 360px;
+  --h-topbar:     56px;
+  --h-statusbar:  28px;
+  --h-scriptpane: 280px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  border-radius: 0 !important;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+h1, .h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--t-36);
+  line-height: 1.05;
+  letter-spacing: var(--track-tight);
+  color: var(--ink);
+  margin: 0;
+}
+
+h2, .h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--t-26);
+  line-height: 1.1;
+  color: var(--ink);
+  margin: 0;
+}
+
+h3, .h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--t-22);
+  line-height: 1.2;
+  color: var(--ink);
+  margin: 0;
+}
+
+h4, .h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--t-16);
+  line-height: 1.3;
+  color: var(--ink);
+  margin: 0;
+}
+
+p, .body {
+  font-family: var(--font-sans);
+  font-size: var(--t-13);
+  line-height: 1.5;
+  color: var(--ink-2);
+  margin: 0;
+}
+
+.body-sm {
+  font-family: var(--font-sans);
+  font-size: var(--t-12);
+  line-height: 1.5;
+  color: var(--ink-3);
+}
+
+.label, .label-caps {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--t-10);
+  letter-spacing: var(--track-wide);
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.meta {
+  font-family: var(--font-mono);
+  font-size: var(--t-11);
+  letter-spacing: var(--track-mid);
+  color: var(--ink-4);
+}
+
+.mono, code, kbd, samp {
+  font-family: var(--font-mono);
+  font-size: var(--t-12);
+  color: var(--ink-2);
+}
+
+kbd, .kbd {
+  font-family: var(--font-mono);
+  font-size: var(--t-11);
+  color: var(--ink-4);
+  padding: 0 4px;
+  border: 1px solid var(--rule-2);
+  background: var(--paper-2);
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--t-18);
+  letter-spacing: var(--track-wide);
+  text-transform: uppercase;
+  color: var(--ink);
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+.wordmark .i { color: var(--amber); }
