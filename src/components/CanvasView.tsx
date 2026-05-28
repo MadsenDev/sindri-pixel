@@ -535,16 +535,57 @@ export function CanvasView({
   };
 
   const circlePixels = (x0: number, y0: number, x1: number, y1: number, filled: boolean): [number, number][] => {
+    const minX = Math.min(x0, x1), maxX = Math.max(x0, x1);
+    const minY = Math.min(y0, y1), maxY = Math.max(y0, y1);
+    if (minX === maxX && minY === maxY) return [[minX, minY]];
+
+    // Bounding box center (sub-pixel) and radii in pixel units
+    const cx = (minX + maxX + 1) / 2;
+    const cy = (minY + maxY + 1) / 2;
+    const rx = (maxX - minX + 1) / 2;
+    const ry = (maxY - minY + 1) / 2;
+
+    // Pixel (x,y) is inside the ellipse when its center (x+0.5, y+0.5) satisfies the equation
+    const inside = (x: number, y: number): boolean => {
+      const dx = (x + 0.5 - cx) / rx;
+      const dy = (y + 0.5 - cy) / ry;
+      return dx * dx + dy * dy <= 1.0;
+    };
+
     const out: [number, number][] = [];
-    const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
-    const rx = Math.abs(x1 - x0) / 2, ry = Math.abs(y1 - y0) / 2;
-    if (rx === 0 || ry === 0) return [[Math.round(cx), Math.round(cy)]];
-    for (let y = 0; y < canvasH; y++) {
-      for (let x = 0; x < canvasW; x++) {
-        const dx = (x + 0.5 - cx) / rx, dy = (y + 0.5 - cy) / ry;
-        const d = dx * dx + dy * dy;
-        if (filled ? d <= 1 : (d <= 1 && d > 0.55)) out.push([x, y]);
+    const seen = new Set<number>();
+    const plot = (x: number, y: number) => {
+      const k = y * 65536 + x;
+      if (!seen.has(k)) { seen.add(k); out.push([x, y]); }
+    };
+
+    if (filled) {
+      // Scan each row and fill from left to right boundary
+      for (let y = minY; y <= maxY; y++) {
+        let left = -1, right = -1;
+        for (let x = minX; x <= maxX; x++) {
+          if (inside(x, y)) { if (left === -1) left = x; right = x; }
+        }
+        if (left !== -1) for (let x = left; x <= right; x++) plot(x, y);
       }
+      return out;
+    }
+
+    // Outline: scan rows for left/right boundary pixels (covers near-horizontal arcs)
+    for (let y = minY; y <= maxY; y++) {
+      let left = -1, right = -1;
+      for (let x = minX; x <= maxX; x++) {
+        if (inside(x, y)) { if (left === -1) left = x; right = x; }
+      }
+      if (left !== -1) { plot(left, y); if (right !== left) plot(right, y); }
+    }
+    // Scan columns for top/bottom boundary pixels (covers near-vertical arcs)
+    for (let x = minX; x <= maxX; x++) {
+      let top = -1, bottom = -1;
+      for (let y = minY; y <= maxY; y++) {
+        if (inside(x, y)) { if (top === -1) top = y; bottom = y; }
+      }
+      if (top !== -1) { plot(x, top); if (bottom !== top) plot(x, bottom); }
     }
     return out;
   };
@@ -777,6 +818,12 @@ export function CanvasView({
       return;
     }
 
+    // If mouse button was released outside the canvas, finalize the stroke now.
+    if (drag && e.buttons === 0) {
+      handleUp();
+      return;
+    }
+
     const { x, y } = eventToPixel(e);
     onCursorChange({ x, y });
     // Update cursor feedback: show move cursor when hovering inside active selection
@@ -786,10 +833,14 @@ export function CanvasView({
 
     if (drag.tool === 'pencil' || drag.tool === 'eraser') {
       const draft = drag.draft!;
-      const segs = linePixels(drag.lastX!, drag.lastY!, x, y);
+      // Clamp the target pixel to canvas bounds so that dragging outside and
+      // re-entering doesn't draw a long diagonal line across the canvas.
+      const cx = Math.max(0, Math.min(canvasW - 1, x));
+      const cy = Math.max(0, Math.min(canvasH - 1, y));
+      const segs = linePixels(drag.lastX!, drag.lastY!, cx, cy);
       segs.forEach(([px, py]) => setPixelInDraft(draft, px, py, drag.tool === 'eraser' ? null : color));
       onPixelsChange(draft);
-      setDrag({ ...drag, lastX: x, lastY: y });
+      setDrag({ ...drag, lastX: cx, lastY: cy });
 
     } else if (drag.tool === 'line') {
       let x1 = x, y1 = y;
