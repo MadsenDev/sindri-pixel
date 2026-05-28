@@ -625,6 +625,7 @@ export function CanvasView({
   };
 
   const handleDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return;  // ignore right-click / middle-click
     if (activeTab !== 'editor' && activeTab !== 'split') return;
     e.preventDefault();
 
